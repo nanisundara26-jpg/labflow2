@@ -1,0 +1,163 @@
+/* ==========================================================================
+   LabFlow Sentinel — Responsive Media Queries & Mobile Overlays
+   ========================================================================== */
+
+/* Tablet & Smaller Laptops (<= 1024px) */
+@media (max-width: 1024px) {
+  :root {
+    --sidebar-width: 220px;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .comparison-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar {
+    padding: 0 1.25rem;
+  }
+
+  .content-area {
+    padding: 1.25rem;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}
+
+/* Mobile Devices & Tablets (<= 768px) */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    box-shadow: var(--shadow-xl);
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(15, 23, 42, 0.5);
+    z-index: 39;
+    backdrop-filter: blur(2px);
+  }
+
+  .sidebar-overlay.active {
+    display: block;
+  }
+
+  .main-wrapper {
+    margin-left: 0;
+  }
+
+  .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .topbar-left {
+    max-width: 100%;
+  }
+
+  .search-shortcut {
+    display: none;
+  }
+
+  .ai-status-pill span:not(.ai-pulse-dot) {
+    display: none;
+  }
+
+  .live-monitor-pill {
+    display: none;
+  }
+
+  .user-details {
+    display: none;
+  }
+
+  .ai-chat-drawer {
+    right: 1rem;
+    left: 1rem;
+    width: auto;
+    bottom: 5rem;
+  }
+
+  .rescue-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analyzer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .report-patient-strip {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .page-header-actions {
+    width: 100%;
+  }
+
+  .table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-field {
+    width: 100%;
+  }
+}
+
+/* Small Mobile (<= 480px) */
+@media (max-width: 480px) {
+  .topbar {
+    padding: 0 0.85rem;
+  }
+
+  .content-area {
+    padding: 0.85rem;
+  }
+
+  .report-paper {
+    padding: 1.25rem;
+  }
+
+  .report-patient-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .report-signatures {
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+
+  .modal-container {
+    max-height: 95vh;
+  }
+
+  .modal-header, .modal-body, .modal-footer {
+    padding: 1rem;
+  }
+}
