@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LabFlow Sentinel — AI-Integrated Healthcare Laboratory Management</title>
+  
+  <!-- Modern Inter Font & Stylesheets -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+<div class="app-container">
+  
+  <!-- Mobile Overlay -->
+  <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+  <!-- Left Sidebar Navigation -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-logo">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 2v7.31"></path>
+          <path d="M14 9.3V1.99"></path>
+          <path d="M8.5 2h7"></path>
+          <path d="M14 9.3a6.5 6.5 0 1 1-4 0"></path>
+          <path d="M5.52 16h12.96"></path>
+        </svg>
+      </div>
+      <div class="brand-info">
+        <div class="brand-title">
+          <span>LabFlow</span>
+          <span class="brand-badge">Sentinel</span>
+        </div>
+        <div class="brand-tagline">Predict. Prioritize. Rescue.</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Core Operations</div>
+      
+      <a class="nav-item active" data-page="dashboard" onclick="app.navigateTo('dashboard')">
+        <span class="nav-icon">📊</span>
+        <span>Dashboard</span>
+      </a>
+
+      <a class="nav-item" data-page="patients" onclick="app.navigateTo('patients')">
+        <span class="nav-icon">👥</span>
+        <span>Patients</span>
+      </a>
+
+      <a class="nav-item" data-page="orders" onclick="app.navigateTo('orders')">
+        <span class="nav-icon">📋</span>
+        <span>Test Orders</span>
+      </a>
+
+      <a class="nav-item" data-page="samples" onclick="app.navigateTo('samples')">
+        <span class="nav-icon">🧪</span>
+        <span>Samples</span>
+      </a>
+
+      <a class="nav-item" data-page="rescue" onclick="app.navigateTo('rescue')">
+        <span class="nav-icon">🛡️</span>
+        <span>Sample Rescue</span>
+        <span class="nav-badge danger">CRITICAL</span>
+      </a>
+
+      <div class="nav-section-title">AI & Diagnostics</div>
+
+      <a class="nav-item" data-page="intelligence" onclick="app.navigateTo('intelligence')">
+        <span class="nav-icon">🤖</span>
+        <span>AI Intelligence</span>
+        <span class="nav-badge purple">Active</span>
+      </a>
+
+      <a class="nav-item" data-page="operations" onclick="app.navigateTo('operations')">
+        <span class="nav-icon">⚙️</span>
+        <span>Operations</span>
+      </a>
+
+      <a class="nav-item" data-page="results" onclick="app.navigateTo('results')">
+        <span class="nav-icon">🔬</span>
+        <span>Results Review</span>
+        <span class="nav-badge warning">ALERT</span>
+      </a>
+
+      <a class="nav-item" data-page="reports" onclick="app.navigateTo('reports')">
+        <span class="nav-icon">📄</span>
+        <span>Clinical Reports</span>
+      </a>
+
+      <div class="nav-section-title">Governance</div>
+
+      <a class="nav-item" data-page="notifications" onclick="app.navigateTo('notifications')">
+        <span class="nav-icon">🔔</span>
+        <span>Notifications</span>
+        <span id="sidebar-notif-badge" class="nav-badge danger" style="display: none;">3</span>
+      </a>
+
+      <a class="nav-item" data-page="audit" onclick="app.navigateTo('audit')">
+        <span class="nav-icon">📜</span>
+        <span>Audit Trail</span>
+      </a>
+
+      <a class="nav-item" data-page="settings" onclick="app.navigateTo('settings')">
+        <span class="nav-icon">⚙️</span>
+        <span>Settings</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-security-badge">
+        <span>🔒</span>
+        <span>Protected Laboratory Environment</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Application Wrapper -->
+  <div class="main-wrapper">
+    
+    <!-- Sticky Top Navigation Bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Toggle Navigation">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+
+        <!-- Global Search Container with Deep Linking -->
+        <div class="global-search-container">
+          <div class="search-input-wrapper">
+            <span class="search-icon">🔍</span>
+            <input 
+              type="text" 
+              id="global-search-input" 
+              class="global-search-input" 
+              placeholder="Search Patient Code (e.g. 0048), Name, Sample ID, Test..." 
+              autocomplete="off"
+            />
+            <span class="search-shortcut">Ctrl+K</span>
+          </div>
+          <div id="global-search-dropdown" class="search-results-dropdown"></div>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <!-- AI System Status Pill -->
+        <div class="ai-status-pill" onclick="app.openModal('ai-status-modal')" title="Click to view AI Subsystem Diagnostics">
+          <span class="ai-pulse-dot"></span>
+          <span>● AI Monitoring</span>
+        </div>
+
+        <!-- Live Monitoring Switch -->
+        <div id="live-monitor-pill" class="live-monitor-pill" onclick="app.toggleLiveMonitoring()" title="Simulates real-time sample queue and time increments">
+          ○ Live Monitoring Off
+        </div>
+
+        <!-- Run AI Simulation Button -->
+        <button class="btn-simulation" onclick="app.runSimulation()" title="Triggers simulated volume spikes, updated risk scores, and alerts">
+          <span>⚡</span> Run AI Simulation
+        </button>
+
+        <!-- Notification Bell -->
+        <div class="icon-button" onclick="app.navigateTo('notifications')" title="Notifications">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <span id="topbar-notif-badge" class="badge-dot" style="display: none;"></span>
+        </div>
+
+        <!-- Role-Based User Persona Switcher -->
+        <div class="user-role-container">
+          <div id="topbar-user-avatar" class="user-avatar">AS</div>
+          <div class="user-details">
+            <div id="topbar-user-name" class="user-name">Dr. Arvind Swamy</div>
+            <div class="user-role">
+              <select id="role-switcher-select" class="role-switcher-select" onchange="app.handleRoleSwitch(this.value)">
+                <option value="admin">Administrator</option>
+                <option value="technician">Lab Technician</option>
+                <option value="pathologist">Pathologist</option>
+                <option value="doctor">Referring Doctor</option>
+                <option value="receptionist">Receptionist</option>
+              </select>
+            </div>
+          </div>
+          <button class="icon-button" onclick="window.location.href='login.html'" title="Sign Out / Switch Session">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Container (SPA Dynamic View Pages) -->
+    <main class="content-area">
+      
+      <!-- VIEW: DASHBOARD -->
+      <section id="view-dashboard" class="page-view active">
+        <div class="page-header">
+          <div class="page-header-left">
+            <h1 class="page-title">
+              <span>Intelligent Laboratory Command Center</span>
+            </h1>
+            <p class="page-subtitle">Sentinel Central Diagnostics &bull; Real-time AI workflow monitoring and predictive turnaround control.</p>
+          </div>
+          <div class="page-header-actions">
+            <button class="btn btn-primary" onclick="app.openRegisterPatientModal()">
+              + Register New Patient
+            </button>
+            <button class="btn btn-secondary" onclick="app.navigateTo('rescue')">
+              🛡️ Rescue Center
+            </button>
+          </div>
+        </div>
+
+        <!-- 6 KPI Metric Cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card primary">
+            <div class="kpi-header">
+              <span class="kpi-label">TOTAL PATIENTS</span>
+              <div class="kpi-icon-wrap primary">👥</div>
+            </div>
+            <div id="kpi-total-patients" class="kpi-value">1,248</div>
+            <div class="kpi-footer">
+              <span class="kpi-trend up-good">↑ +14%</span>
+              <span class="kpi-subtitle">vs last week</span>
+            </div>
+          </div>
+
+          <div class="kpi-card accent">
+            <div class="kpi-header">
+              <span class="kpi-label">ACTIVE SAMPLES</span>
+              <div class="kpi-icon-wrap accent">🧪</div>
+            </div>
+            <div id="kpi-active-samples" class="kpi-value">86</div>
+            <div class="kpi-footer">
+              <span class="kpi-trend up-good">● 100% tracked</span>
+              <span class="kpi-subtitle">across 10 stages</span>
+            </div>
+          </div>
+
+          <div class="kpi-card success">
+            <div class="kpi-header">
+              <span class="kpi-label">TAT COMPLIANCE</span>
+              <div class="kpi-icon-wrap success">⏱️</div>
+            </div>
+            <div id="kpi-tat-compliance" class="kpi-value">94.6%</div>
+            <div class="kpi-footer">
+              <span class="kpi-trend up-good">↑ +2.1%</span>
+              <span class="kpi-subtitle">within protocol target</span>
+            </div>
+          </div>
+
+          <div class="kpi-card danger">
+            <div class="kpi-header">
+              <span class="kpi-label">SAMPLES AT RISK</span>
+              <div class="kpi-icon-wrap danger">⚠️</div>
+            </div>
+            <div id="kpi-samples-at-risk" class="kpi-value">12</div>
+            <div class="kpi-footer">
+              <span class="kpi-trend up-bad">⚡ Action required</span>
+              <span class="kpi-subtitle">in Rescue Center</span>
+            </div>
+          </div>
+
+          <div class="kpi-card warning">
+            <div class="kpi-header">
+              <span class="kpi-label">CRITICAL RESULTS</span>
+              <div class="kpi-icon-wrap warning">🚨</div>
+            </div>
+            <div id="kpi-critical-results" class="kpi-value">4</div>
+            <div class="kpi-footer">
+              <span class="kpi-trend up-bad">Delta alert</span>
+              <span class="kpi-subtitle">requiring callouts</span>
+            </div>
+          </div>
+
+          <div class="kpi-card purple">
+            <div class="kpi-header">
+              <span class="kpi-label">ANALYZER UTILIZATION</span>
+              <div class="kpi-icon-wrap purple">⚙️</div>
+            </div>
+            <div id="kpi-analyzer-utilization" class="kpi-value">78%</div>
+            <div class="kpi-footer">
+              <span class="kpi-trend up-good">Sysmex XN: 94%</span>
+              <span class="kpi-subtitle">Cobas: 63%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Command Center Box -->
+        <div class="ai-command-box">
+          <div class="ai-command-header">
+            <div class="ai-command-title-group">
+              <div class="ai-sparkle-icon">✨</div>
+              <div>
+                <div class="ai-command-headline">AI Command Center & Predictive Intelligence</div>
+                <div class="ai-command-subtext">Continuous real-time heuristic analysis detecting bottlenecks, sample decay, and TAT breach vectors.</div>
+              </div>
+            </div>
+
+            <!-- Health Score Gauge -->
+            <div class="ai-health-meter">
+              <div class="ai-health-score">92%</div>
+              <div class="ai-health-label">
+                <span class="ai-health-status">Healthy Operation</span>
+                <span class="ai-health-desc">AI Sentinel Model Active</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Real-Time AI Alert Insights Feed -->
+          <div id="dashboard-ai-insights" class="ai-insights-grid"></div>
+        </div>
+
+        <!-- Dashboard Two-Column Grid: Predictive TAT & Priority Queue -->
+        <div class="dashboard-grid">
+          <!-- Left: AI Predictive TAT Table -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">⏱️ AI Predictive Turnaround (TAT) Monitor</div>
+                <div class="card-subtitle">Predictive models forecast completion times and highlight breach hazards.</div>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="app.navigateTo('samples')">
+                View All Samples →
+              </button>
+            </div>
+            <div class="card-body no-padding">
+              <div id="dashboard-tat-table"></div>
+            </div>
+          </div>
+
+          <!-- Right: AI Priority Queue -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">🎯 AI Dynamic Priority Queue</div>
+                <div class="card-subtitle">Samples ranked by urgency, waiting time & analyzer availability.</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div id="dashboard-priority-queue"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW: PATIENTS -->
+      <section id="view-patients" class="page-view">
+        <div class="page-header">
+          <div class="page-header-left">
+            <h1 class="page-title">👥 Patient Management</h1>
+            <p class="page-subtitle">Unique short 4-digit Patient Codes (e.g. 0048, 0049). Zero QR/Barcodes.</p>
+          </div>
+          <div class="page-header-actions">
+            <button class="btn btn-primary" onclick="app.openRegisterPatientModal()">
+              + Register New Patient
+            </button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="table-toolbar">
+            <div class="filter-group">
+              <input 
+                type="text" 
+                class="search-field" 
+                placeholder="Search by Code (e.g. 0048) or Name..." 
+                oninput="patientManager.renderPatientList('patients-table-container', this.value)"
+              />
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">
+              All patients receive auto-incrementing 4-digit codes.
+            </div>
+          </div>
+          <div class="card-body no-padding">
+            <div id="patients-table-container"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW: PATIENT PROFILE -->
+      <section id="view-patient-profile" class="page-view">
+        <div id="patient-profile-container"></div>
+      </section>
+
+      <!-- VIEW: TEST ORDERS -->
+      <section id="view-orders" class="page-view">
+        <div class="page-header">
+          <div class="page-header-left">
+            <h1 class="page-title">📋 Test Order Management</h1>
+            <p class="page-subtitle">Clinical test requisition linked to patient codes with STAT/Urgent prioritization.</p>
+          </div>
+          <div class="page-header-actions">
+            <button class="btn btn-primary" onclick="app.openNewOrderModal()">
+              + Create Test Order
+            </button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body no-padding">
+            <div id="orders-table-container"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW: SAMPLES -->
+      <section id="view-samples" class="page-view">
+        <div class="page-header">
+          <div class="page-header-left">
+            <h1 class="page-title">🧪 Sample Management & 10-Stage Journey</h1>
+            <p class="page-subtitle">Complete sample lifecycle tracking from Registration to Patient Notification.</p>
+          </div>
+          <div class="page-header-actions">
+            <button class="btn btn-secondary" onclick="app.navigateTo('rescue')">
+              🛡️ Open Rescue Center
+            </button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="table-toolbar">
+            <div class="filter-group">
+              <input 
+                type="text" 
+                class="search-field" 
+                placeholder="Search Sample ID, Code, Test..." 
+                oninput="sampleManager.renderSampleList('samples-table-container', { search: this.value })"
+              />
+              <select class="filter-select" onchange="sampleManager.renderSampleList('samples-table-container', { risk: this.value })">
+                <option value="all">All Risk Levels</option>
+                <option value="critical">Critical Risk</option>
+                <option value="high">High Risk</option>
+                <option value="moderate">Moderate Risk</option>
+                <option value="low">Low Risk</option>
+              </select>
+              <select class="filter-select" onchange="sampleManager.renderSampleList('samples-table-container', { priority: this.value })">
+                <option value="all">All Priorities</option>
+                <option value="stat">STAT Priority</option>
+                <option value="urgent">Urgent</option>
+                <option value="normal">Normal</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-body no-padding">
+            <div id="samples-table-container"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW: SAMPLE RESCUE CENTER -->
+      <section id="view-rescue" class="page-view">
+        <div class="page-header">
+          <div class="page-header-left">
+            <h1 class="page-title">
+              <span>🛡️ Sample Rescue Center</span>
+            </h1>
+            <p class="page-subtitle">AI-identified specimens at risk of breaching turnaround protocol with recommended rescue interventions.</p>
+          </div>
+          <div class="page-header-actions">
+            <button class="btn btn-primary" onclick="operationsManager.rebalanceWorkload()">
+              ⚡ Rebalance Analyzers
+            </button>
+          </div>
+        </div>
+
+        <div id="rescue-cards-container"></div>
+      </section>
+
+      <!-- VIEW: AI INTELLIGENCE -->
+      <section id="view-intelligence" class="page-view">
+        <div class="page-header">
+          <div class="page-header-left">
+            <h1 class="page-title">🤖 AI Intelligence & Risk Engine</h1>
+            <p class="page-subtitle">Deep heuristic reasoning, confidence metrics, and multi-factor queue optimization.</p>
+          </div>
+        </div>
+
+        <div id="intelligence-view-container"></div>
+      </section>
+
+      <!-- VIEW: OPERATIONS -->
+      <section id="view-operations" class="page-view">
+        <div class="page-header">
+          <div class="page-header-left">
+            <h1 class="page-title">⚙️ Operations Center & What-If Simulator</h1>
+            <p class="page-subtitle">Live automated analyzer utilization, capacity forecasting, and operational stress-testing.</p>
+          </div>
+          <div class="page-header-actions">
+            <button class="btn btn-primary" onclick="operationsManager.rebalanceWorkload()">
+              ⚖️ Balance Analyzer Workload
+            </button>
+          </div>
+        </div>
+
+        <!-- Analyzer Instrument Monitor Cards -->
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin-bottom: 1rem;">
+          Automated Instrumentation Status
+        </h3>
+        <div id="analyzers-grid-container" class="analyzer-grid"></div>
+
+        <!-- What-If Simulator -->
+        <div id="what-if-container"></div>
+      </section>
+
+      <!-- VIEW: RESULTS REVIEW -->
+      <section id="view-results" class="page-view">
+        <div class="page-header">
+          <div class="page-header-left">
+            <h1 class="page-title">🔬 Results Management & AI Anomaly Detection</h1>
+            <p class="page-subtitle">Clinical findings validation, delta checks, and non-diagnostic heuristic flags.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="table-toolbar">
+            <div class="filter-group">
+              <button class="btn btn-secondary btn-sm result-tab-btn active" data-tab="all" onclick="app.setResultsTab('all')">
+                All Results
+              </button>
+              <button class="btn btn-secondary btn-sm result-tab-btn" data-tab="critical" onclick="app.setResultsTab('critical')">
+                🚨 Critical Alerts
+              </button>
+              <button class="btn btn-secondary btn-sm result-tab-btn" data-tab="pending" onclick="app.setResultsTab('pending')">
+                Pending Review
+              </button>
+              <button class="btn btn-secondary btn-sm result-tab-btn" data-tab="reviewed" onclick="app.setResultsTab('reviewed')">
+                Reviewed & Verified
+              </button>
+            </div>
+          </div>
+          <div class="card-body no-padding">
+            <div id="results-table-container"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW: REPORTS -->
+      <section id="view-reports" class="page-view">
+        <div class="page-header">
+          <div class="page-header-left">
+            <h1 class="page-title">📄 Clinical Diagnostic Reports</h1>
+            <p class="page-subtitle">Standardized laboratory reporting with AI technical summary draft assistance.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body no-padding">
+            <div id="reports-list-container"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW: REPORT PREVIEW -->
+      <section id="view-report-preview" class="page-view">
+        <div id="report-preview-container"></div>
+      </section>
+
+      <!-- VIEW: NOTIFICATIONS -->
+      <section id="view-notifications" class="page-view">
+        <div class="page-header">
+          <div class="page-header-left">
+            <h1 class="page-title">🔔 Operational & Clinical Notifications</h1>
+            <p class="page-subtitle">Centralized alerts for critical values, TAT warnings, and analyzer bottlenecks.</p>
+          </div>
+        </div>
+
+        <div id="notifications-view-container"></div>
+      </section>
+
+      <!-- VIEW: AUDIT TRAIL -->
+      <section id="view-audit" class="page-view">
+        <div class="page-header">
+          <div class="page-header-left">
+            <h1 class="page-title">📜 Tamper-Evident Operational Audit Trail</h1>
+            <p class="page-subtitle">Immutable log of clinical sign-offs, rescue approvals, and workflow state transitions.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="table-toolbar">
+            <input 
+              type="text" 
+              class="search-field" 
+              placeholder="Search user, action, sample..." 
+              oninput="app.renderAuditTrail(this.value)"
+            />
+          </div>
+          <div class="card-body no-padding">
+            <div id="audit-table-container"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW: SETTINGS -->
+      <section id="view-settings" class="page-view">
+        <div class="page-header">
+          <div class="page-header-left">
+            <h1 class="page-title">⚙️ System Configuration</h1>
+            <p class="page-subtitle">Laboratory parameters, TAT thresholds, and AI heuristic toggles.</p>
+          </div>
+        </div>
+
+        <div id="settings-view-container"></div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ==========================================================================
+     MODALS & FLOATING CONTROLS
+     ========================================================================== -->
+
+<!-- Register Patient Modal -->
+<div id="register-patient-modal" class="modal-backdrop">
+  <div class="modal-container" style="max-width: 580px;">
+    <div class="modal-header">
+      <div class="modal-title">
+        <span>👥</span> Register New Patient
+      </div>
+      <button class="modal-close-btn" onclick="app.closeModal('register-patient-modal')">&times;</button>
+    </div>
+    <form onsubmit="app.handlePatientRegistration(event)">
+      <div class="modal-body">
+        <div class="form-group" style="background: #f8fafc; border: 1px dashed var(--primary); padding: 0.75rem 1rem; border-radius: var(--radius-md); margin-bottom: 1.25rem;">
+          <label class="form-label" style="color: var(--primary);">Automatically Generated Patient Code</label>
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <input type="text" id="new-patient-code-preview" class="form-control" style="font-family: var(--font-mono); font-weight: 800; font-size: 1.2rem; color: #0284c7; width: 140px;" readonly />
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Unique 4-digit code. Zero barcodes needed.</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Full Patient Name *</label>
+          <input type="text" name="patientName" class="form-control" placeholder="e.g. Rahul Sharma" required />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Age *</label>
+            <input type="number" name="patientAge" class="form-control" placeholder="e.g. 42" min="1" max="120" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Gender *</label>
+            <select name="patientGender" class="form-control" required>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Phone Number *</label>
+            <input type="tel" name="patientPhone" class="form-control" placeholder="+91 98765 43210" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" name="patientEmail" class="form-control" placeholder="patient@example.com" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Referring Clinician / Doctor</label>
+          <input type="text" name="patientDoctor" class="form-control" placeholder="Dr. Arvind Swamy" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Residential Address</label>
+          <input type="text" name="patientAddress" class="form-control" placeholder="City address" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="app.closeModal('register-patient-modal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Complete Registration & Generate Code</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Create Test Order Modal -->
+<div id="create-order-modal" class="modal-backdrop">
+  <div class="modal-container" style="max-width: 540px;">
+    <div class="modal-header">
+      <div class="modal-title">
+        <span>📋</span> Create Laboratory Test Order
+      </div>
+      <button class="modal-close-btn" onclick="app.closeModal('create-order-modal')">&times;</button>
+    </div>
+    <form onsubmit="app.handleCreateOrder(event)">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Select Patient (By 4-Digit Code)</label>
+          <select id="order-patient-code-select" name="orderPatientCode" class="form-control" required></select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Diagnostic Test / Panel</label>
+          <select name="orderTestName" class="form-control" required>
+            <option value="CBC">Complete Blood Count (CBC)</option>
+            <option value="Lipid Profile">Lipid Profile</option>
+            <option value="Liver Function Test">Liver Function Test (LFT)</option>
+            <option value="Kidney Function Test">Kidney Function Test (KFT)</option>
+            <option value="HbA1c">HbA1c (Glycated Hemoglobin)</option>
+            <option value="Thyroid Profile">Thyroid Profile (T3, T4, TSH)</option>
+            <option value="Troponin-I">Troponin-I (High Sensitivity)</option>
+            <option value="Vitamin D">Vitamin D (25-OH)</option>
+            <option value="CRP">CRP (Quantitative)</option>
+            <option value="Blood Glucose">Blood Glucose (F/PP)</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Priority Level</label>
+            <select name="orderPriority" class="form-control" required>
+              <option value="Normal">Normal (Standard Batch)</option>
+              <option value="Urgent">Urgent (Expedited)</option>
+              <option value="STAT">STAT (Emergency Cardiac/Trauma)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Ordering Doctor</label>
+            <input type="text" name="orderDoctor" class="form-control" placeholder="Dr. Arvind Swamy" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="app.closeModal('create-order-modal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Create Order & Accession Sample</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Sample Details & 10-Stage Journey Modal -->
+<div id="sample-details-modal" class="modal-backdrop">
+  <div class="modal-container">
+    <div class="modal-header">
+      <div id="sample-details-modal-title" class="modal-title">Sample Digital Journey</div>
+      <button class="modal-close-btn" onclick="app.closeModal('sample-details-modal')">&times;</button>
+    </div>
+    <div id="sample-details-modal-body" class="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="app.closeModal('sample-details-modal')">Close</button>
+      <button class="btn btn-primary" onclick="app.advanceCurrentSampleStage()">
+        Advance to Next Workflow Stage →
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Why Prioritized Explainability Modal -->
+<div id="why-prioritized-modal" class="modal-backdrop">
+  <div class="modal-container" style="max-width: 540px;">
+    <div class="modal-header">
+      <div class="modal-title">
+        <span>✨</span> AI Explainability Breakdown
+      </div>
+      <button class="modal-close-btn" onclick="app.closeModal('why-prioritized-modal')">&times;</button>
+    </div>
+    <div id="why-prioritized-modal-body" class="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="app.closeModal('why-prioritized-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Non-Diagnostic AI Anomaly Modal -->
+<div id="anomaly-modal" class="modal-backdrop">
+  <div class="modal-container" style="max-width: 620px;">
+    <div class="modal-header">
+      <div class="modal-title">
+        <span>⚠️</span> Non-Diagnostic AI Result Anomaly
+      </div>
+      <button class="modal-close-btn" onclick="app.closeModal('anomaly-modal')">&times;</button>
+    </div>
+    <div id="anomaly-modal-body" class="modal-body"></div>
+  </div>
+</div>
+
+<!-- Reassign Analyzer Modal -->
+<div id="reassign-modal" class="modal-backdrop">
+  <div class="modal-container" style="max-width: 440px;">
+    <div class="modal-header">
+      <div class="modal-title">Reassign Analyzer</div>
+      <button class="modal-close-btn" onclick="app.closeModal('reassign-modal')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+        Select an alternate available analyzer instrument to balance workload:
+      </p>
+      <div class="form-group">
+        <label class="form-label">Target Analyzer</label>
+        <select id="reassign-analyzer-select" class="form-control">
+          <option value="Analyzer B">Analyzer B — Roche Cobas c501 (Available 63%)</option>
+          <option value="Analyzer C">Analyzer C — Abbott Architect i2000SR (Available 38%)</option>
+          <option value="Analyzer A">Analyzer A — Sysmex XN-1000 (Hematology 94%)</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="app.closeModal('reassign-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="app.submitReassignAnalyzer()">Confirm Reassignment</button>
+    </div>
+  </div>
+</div>
+
+<!-- AI Subsystems Status Modal -->
+<div id="ai-status-modal" class="modal-backdrop">
+  <div class="modal-container" style="max-width: 500px;">
+    <div class="modal-header">
+      <div class="modal-title">
+        <span>🤖</span> AI Sentinel Subsystems Status
+      </div>
+      <button class="modal-close-btn" onclick="app.closeModal('ai-status-modal')">&times;</button>
+    </div>
+    <div class="modal-body" style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.85rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: #f8fafc; border-radius: var(--radius-sm);">
+        <div><strong>Predictive TAT Model:</strong> Forecasts elapsed vs target turnaround</div>
+        <span class="badge badge-success">● Active</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: #f8fafc; border-radius: var(--radius-sm);">
+        <div><strong>Sample Risk Engine:</strong> Multi-factor mathematical risk scoring</div>
+        <span class="badge badge-success">● Active</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: #f8fafc; border-radius: var(--radius-sm);">
+        <div><strong>Non-Diagnostic Anomaly Detection:</strong> Delta checks & extremes</div>
+        <span class="badge badge-success">● Active</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: #f8fafc; border-radius: var(--radius-sm);">
+        <div><strong>Operational Intelligence:</strong> Analyzer queue bottlenecks</div>
+        <span class="badge badge-success">● Active</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: #f8fafc; border-radius: var(--radius-sm);">
+        <div><strong>AI Assistant:</strong> Real-time conversational operational queries</div>
+        <span class="badge badge-success">● Active</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="app.closeModal('ai-status-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Floating LabFlow AI Chat Assistant Trigger -->
+<div class="ai-floating-trigger" onclick="app.toggleAiChat()" title="LabFlow AI Operational Assistant">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 2v4"></path>
+    <path d="M12 18v4"></path>
+    <path d="M4.93 4.93l2.83 2.83"></path>
+    <path d="M16.24 16.24l2.83 2.83"></path>
+    <path d="M2 12h4"></path>
+    <path d="M18 12h4"></path>
+    <path d="M4.93 19.07l2.83-2.83"></path>
+    <path d="M16.24 7.76l2.83-2.83"></path>
+  </svg>
+</div>
+
+<!-- Floating AI Chat Slide-Over Drawer -->
+<div id="ai-chat-drawer" class="ai-chat-drawer">
+  <div class="ai-chat-header">
+    <div class="ai-chat-title">
+      <span>✨</span> LabFlow AI Assistant
+    </div>
+    <button onclick="app.toggleAiChat()" style="color: white; font-size: 1.2rem;">&times;</button>
+  </div>
+
+  <div id="ai-chat-messages" class="ai-chat-messages">
+    <div class="ai-msg assistant">
+      Hello! I am <strong>LabFlow AI</strong>, your laboratory operations assistant. Ask me about at-risk samples, analyzer bottlenecks, or pending critical results.
+    </div>
+  </div>
+
+  <!-- Quick Query Chips -->
+  <div class="ai-quick-chips">
+    <button class="chip-btn" onclick="app.sendAiChatMessage('Which samples are at risk?')">At-Risk Samples</button>
+    <button class="chip-btn" onclick="app.sendAiChatMessage('Why is Analyzer A overloaded?')">Analyzer A Overload?</button>
+    <button class="chip-btn" onclick="app.sendAiChatMessage('Show critical pending results.')">Critical Results</button>
+    <button class="chip-btn" onclick="app.sendAiChatMessage('Which samples should be prioritized?')">Prioritized Samples</button>
+    <button class="chip-btn" onclick="app.sendAiChatMessage('Summarize today\'s laboratory workload.')">Today's Summary</button>
+  </div>
+
+  <div class="ai-chat-input-row">
+    <input 
+      type="text" 
+      id="ai-chat-input" 
+      class="ai-chat-input" 
+      placeholder="Ask LabFlow AI a question..." 
+      onkeydown="if(event.key==='Enter') app.sendAiChatMessage()"
+    />
+    <button class="btn btn-primary btn-sm" onclick="app.sendAiChatMessage()">Send</button>
+  </div>
+</div>
+
+<!-- Reusable Toast Notification Container -->
+<div id="toast-container" class="toast-container"></div>
+
+<!-- Core Modular JavaScript Scripts -->
+<script src="js/data.js"></script>
+<script src="js/aiService.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/patients.js"></script>
+<script src="js/samples.js"></script>
+<script src="js/rescue.js"></script>
+<script src="js/operations.js"></script>
+<script src="js/results.js"></script>
+<script src="js/reports.js"></script>
+<script src="js/notifications.js"></script>
+<script src="js/audit.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
